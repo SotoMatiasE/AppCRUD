@@ -2,4 +2,6 @@
 <resources>
     <integer name="name_max_length">30</integer>
     <integer name="description_maxLength">60</integer>
+    <integer name="description_finished_size">12</integer>
+    <integer name="description_default_size">16</integer>
 </resources>

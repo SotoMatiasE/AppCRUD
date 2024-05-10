@@ -1,6 +1,6 @@
 package com.example.appcrud
 
-object Contants {
+object Constants {
     const val DATABASE_NAME = "appCrud"
     const val DATABASE_VERSION = 1
 
@@ -8,6 +8,10 @@ object Contants {
     const val PROPERTY_ID = "id"
     const val PROPERTY_NAME = "name"
     const val PORPERTY_PASSWORD = "password"
+
+    const val ENTITY_PRODUCT = "entity_product"
+    const val PROPERTY_IDPROD = "idProd"
     const val PROPERTY_PRODUCT = "product"
     const val PROPERTY_PRICE = "price"
+    const val PROPERTY_IS_FINISHED = "is_finished"
 }
