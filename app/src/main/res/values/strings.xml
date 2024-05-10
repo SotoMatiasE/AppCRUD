@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AppCRUD</string>
+    <string name="hint_name">Nombre</string>
+    <string name="title_name">CRUD</string>
+    <string name="hint_pass">Password</string>
+    <string name="button_next">Ingresar</string>
+    <string name="hint_obligatorio">Obligatorio</string>
 </resources>
