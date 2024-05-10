@@ -5,4 +5,5 @@
     <string name="hint_pass">Password</string>
     <string name="button_next">Ingresar</string>
     <string name="hint_obligatorio">Obligatorio</string>
+    <string name="hint_description">Añade un Producto</string>
 </resources>
