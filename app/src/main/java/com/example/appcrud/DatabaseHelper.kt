@@ -5,16 +5,17 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DATABASE_NAME,
-                                                  null, Constants.DATABASE_VERSION)
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENTITY_PRODUCT,
+    null, Constants.DATABASE_VERSION)
 {
     override fun onCreate(db: SQLiteDatabase?) {
         //DEFINIR LA ESTRUCTURA DE LA DB Y DEFINIR LAS TABLAS QUE ESTAN RELACIUONANDO E INTERACTUANDO
         val createTable = "CREATE TABLE ${Constants.ENTITY_PRODUCT}(" +
                 "${Constants.PROPERTY_IDPROD} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "${Constants.PROPERTY_PRODUCT} STRING(60), ${Constants.PROPERTY_PRICE} INTEGER)"
+                "${Constants.PROPERTY_PRODUCT} VARCHAR(60), ${Constants.PROPERTY_IS_FINISHED} BOOLEAN)"
         //creamos la db con OBJ Note
         db?.execSQL(createTable) //le decimo que se ejecute
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -28,6 +29,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DAT
         val database = this.readableDatabase
         val query = "SELECT * FROM ${Constants.ENTITY_PRODUCT}"
 
+
         val result = database.rawQuery(query, null)
 
         if (result.moveToFirst()) {
@@ -38,8 +40,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DAT
                 val prod = Product()
                 prod.idProduct = result.getLong(if (idProd >= 0) idProd else 0)
                 prod.productName = result.getString(if (product >= 0) product else 0)
-                prod.isFinished =
-                    result.getInt(if (isFinished >= 0) isFinished else 0) == Constants.TRUE
+                prod.isFinished = result.getInt(if (isFinished >= 0) isFinished else 0) == Constants.TRUE
 
                 prods.add(prod)
             }while (result.moveToNext())
@@ -80,9 +81,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DAT
         val database = this.writableDatabase
         val result = database.delete(
             Constants.ENTITY_PRODUCT,
-            "${Constants.PROPERTY_IDPROD}," +
-                    "${prod.idProduct}", null )
-
-        return  result == Constants.TRUE
+            "${Constants.PROPERTY_IDPROD} = ?",
+            arrayOf(prod.idProduct.toString())
+        )
+        return result == 1
     }
 }

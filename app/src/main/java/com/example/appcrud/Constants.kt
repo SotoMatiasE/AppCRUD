@@ -12,7 +12,6 @@ object Constants {
     const val ENTITY_PRODUCT = "entity_product"
     const val PROPERTY_IDPROD = "idProd"
     const val PROPERTY_PRODUCT = "product"
-    const val PROPERTY_PRICE = "price"
     const val PROPERTY_IS_FINISHED = "is_finished"
 
     const val TRUE = 1

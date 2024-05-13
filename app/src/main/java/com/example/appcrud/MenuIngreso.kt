@@ -21,6 +21,7 @@ class MenuIngreso : AppCompatActivity() {
 
         database = DatabaseHelper(this)//INSTANCIAMOS LA CLASE DataBaseHelper
 
+
         prodAdapter = ProductAdapter(mutableListOf(), this)
         binding.rvProducts.apply {
             layoutManager = LinearLayoutManager(this@MenuIngreso)
@@ -35,8 +36,9 @@ class MenuIngreso : AppCompatActivity() {
 
         binding.btnAdd.setOnClickListener {
             if (binding.etDescription.text.toString().isNotBlank()) {
-                val prod = Product(productName = binding.etDescription.text.toString())
+                val prod = Product(productName = binding.etDescription.text.toString().trim())
                 prod.idProduct = database.insertProd(prod)
+
                 if (prod.idProduct != Constants.ID_ERROR.toLong()) {
                     addProdAutm(prod)
                     binding.etDescription.text?.clear()
@@ -49,6 +51,7 @@ class MenuIngreso : AppCompatActivity() {
             }
         }
     }
+
     override fun onStart() {
         super.onStart()
         getData()
@@ -86,12 +89,12 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-    fun onLongClick(product: Product, productAdapter: ProductAdapter) {
+    fun onLongClick(product: Product, currentAdapter: ProductAdapter) {
         val builder = AlertDialog.Builder(this)
            .setTitle(getString(R.string.dialog_title))
            .setPositiveButton(getString(R.string.dialog_ok)) { _, _ ->
                 if (database.deleteProd(product)) {
-                    deleteProdAutom(product)
+                    currentAdapter.remove(product)
                     showMessage(R.string.msg_operation_sucess)
                 } else {
                     showMessage(R.string.message_db_error)
