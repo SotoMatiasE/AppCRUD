@@ -7,7 +7,16 @@ package com.example.appcrud
 
 }*/
 
-data class Product (var idProduct: Long = 0, var productName: String = "", var isFinished: Boolean = false)
+data class Product(
+    var idProduct: Long = 0,
+    var productName: String = "",
+    var isFinished: Boolean = false
+)
 {
+
+}
+
+data class Image(val image: ByteArray){
+
 
 }
