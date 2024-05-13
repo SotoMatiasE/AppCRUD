@@ -1,8 +1,6 @@
 package com.example.appcrud
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,12 +15,11 @@ class MenuIngreso : AppCompatActivity() {
     private lateinit var database: DatabaseHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMenuIngresoBinding.inflate(layoutInflater)
         enableEdgeToEdge()
+        binding = ActivityMenuIngresoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         database = DatabaseHelper(this)//INSTANCIAMOS LA CLASE DataBaseHelper
-
 
         prodAdapter = ProductAdapter(mutableListOf(), this)
         binding.rvProducts.apply {
@@ -30,85 +27,79 @@ class MenuIngreso : AppCompatActivity() {
             adapter = prodAdapter
         }
 
-
+        prodFinishAdapter = ProductAdapter(mutableListOf(), this)
+        binding.rvNotesFinished.apply {
+            layoutManager = LinearLayoutManager(this@MenuIngreso)
+            adapter = prodFinishAdapter
+        }
 
         binding.btnAdd.setOnClickListener {
             if (binding.etDescription.text.toString().isNotBlank()) {
                 val prod = Product(productName = binding.etDescription.text.toString())
                 prod.idProduct = database.insertProd(prod)
                 if (prod.idProduct != Constants.ID_ERROR.toLong()) {
+                    addProdAutm(prod)
+                    binding.etDescription.text?.clear()
+                    showMessage(R.string.msg_operation_sucess)
+                }else {
+                    showMessage(R.string.msg_operation_error)
+                }
+            }else{
+                binding.etDescription.error = getString(R.string.validation_field_require)
+            }
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+        getData()
+    }
 
+    private fun getData() {
+        val data = database.getAllProducts()
+        data.forEach { prod ->
+            addProdAutm(prod)
+        }
+    }
+
+    private fun addProdAutm(prod: Product) {
+        if (prod.isFinished) {
+            prodFinishAdapter.add(prod)
+        } else {
+            prodAdapter.add(prod)
+        }
+    }
+
+    private fun deleteProdAutom(prod: Product) {
+        if (prod.isFinished) {
+            prodAdapter.remove(prod)
+        } else {
+            prodFinishAdapter.remove(prod)
+        }
+    }
+
+    fun onChecked(prod: Product) {
+        if (database.updateProd(prod)){
+            deleteProdAutom(prod)
+            addProdAutm(prod)
+        }else {
+            showMessage(R.string.msg_operation_error)
+        }
+    }
+
+    fun onLongClick(product: Product, productAdapter: ProductAdapter) {
+        val builder = AlertDialog.Builder(this)
+           .setTitle(getString(R.string.dialog_title))
+           .setPositiveButton(getString(R.string.dialog_ok)) { _, _ ->
+                if (database.deleteProd(product)) {
+                    deleteProdAutom(product)
+                    showMessage(R.string.msg_operation_sucess)
+                } else {
+                    showMessage(R.string.message_db_error)
                 }
             }
+           .setNegativeButton(getString(R.string.dialog_cancel), null)
 
-            //ingreso menu2
-            val btnNext: Button = findViewById(R.id.btnNext)
-            btnNext.setOnClickListener {
-                val intent: Intent = Intent(this, MenuIngreso::class.java)
-                startActivity(intent)
-            }
-
-
-        }
-        fun getData() {
-            val data = database.getAllProducts()
-            data.forEach { prod ->
-                addProdAutm(prod)
-            }
-        }
-
-        fun onStart() {
-            super.onStart()
-            getData()
-        }
-
-
-        fun addProdAutm(prod: Product) {
-            if (prod.isFinished) {
-                prodFinishAdapter.add(prod)
-            } else {
-                prodAdapter.add(prod)
-            }
-        }
-
-
-
-
-        fun deleteProdAutom(prod: Product) {
-            if (prod.isFinished) {
-                prodAdapter.remove(prod)
-            } else {
-                prodFinishAdapter.remove(prod)
-            }
-        }
-
-        override fun onChecked(product: Product, appAdapter: ProductAdapter) {
-            if (database.updateProd(product)){
-                deleteProdAutom(product)
-                addProdAutm(product)
-            }else {
-                showMessage(R.string.message_db_error)
-            }
-        }
-
-        override fun onLongClick(product: Product, currentAdapter: ProductAdapter) {
-            val builder = AlertDialog.Builder(this)
-                .setTitle(getString(R.string.dialog_title))
-                .setPositiveButton(getString(R.string.dialog_ok)) { _, _ ->
-                    if (database.deleteProd(product)) {
-                        currentAdapter.remove(product)
-                        showMessage(R.string.msg_operation_sucess)
-                    } else {
-                        showMessage(R.string.message_db_error)
-                    }
-                }
-                .setNegativeButton(getString(R.string.dialog_cancel), null)
-
-            builder.create().show()
-        }
-
-
-
+        builder.create().show()
     }
 
     private fun showMessage(msgRes: Int) {

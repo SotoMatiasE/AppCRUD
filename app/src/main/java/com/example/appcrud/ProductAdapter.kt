@@ -22,27 +22,6 @@ class ProductAdapter(private var prodList: MutableList<Product>, private val lis
 
         return ViewHolder(view)
     }
-
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
-        val binding = ItemProductBinding.bind(view)//llamamos a item_product.xml
-
-        fun setListener(prod: Product){ //implementar Class Product, recibe Note respecto a la que este seleccionada
-            binding.cbFinished.setOnClickListener{
-                prod.isFinished = (it as CheckBox).isChecked //actualizamos nota dependiendo si esta o no check
-                //listener.onChecked(prod, this@ProductAdapter)//y lo pasamos al listener cambiamos el estado del check en pendientes
-            }
-
-            binding.root.setOnLongClickListener {
-                listener.onLongClick(prod, this@ProductAdapter)
-                true
-            }
-        }
-    }
-
-    //VA A INDICAR CUANTOS ELEMENTOS QUEREMOS VER EN EL LISTADO
-    override fun getItemCount(): Int = prodList.size
-
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val prod = prodList[position]
 
@@ -68,6 +47,9 @@ class ProductAdapter(private var prodList: MutableList<Product>, private val lis
 
     }
 
+    //VA A INDICAR CUANTOS ELEMENTOS QUEREMOS VER EN EL LISTADO
+    override fun getItemCount(): Int = prodList.size
+
     fun add(prod: Product){
         prodList.add(prod)
         notifyDataSetChanged()
@@ -76,6 +58,22 @@ class ProductAdapter(private var prodList: MutableList<Product>, private val lis
     fun remove(prod: Product){
         prodList.remove(prod)
         notifyDataSetChanged()
+    }
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+        val binding = ItemProductBinding.bind(view)//llamamos a item_product.xml
+
+        fun setListener(prod: Product){ //implementar Class Product, recibe Note respecto a la que este seleccionada
+            binding.cbFinished.setOnClickListener{
+                prod.isFinished = (it as CheckBox).isChecked //actualizamos nota dependiendo si esta o no check
+                listener.onChecked(prod)//y lo pasamos al listener cambiamos el estado del check en pendientes
+            }
+
+            binding.root.setOnLongClickListener {
+                listener.onLongClick(prod, this@ProductAdapter)
+                true
+            }
+        }
     }
 
 }

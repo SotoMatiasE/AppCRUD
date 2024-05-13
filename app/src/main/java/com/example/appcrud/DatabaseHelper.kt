@@ -10,15 +10,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DAT
 {
     override fun onCreate(db: SQLiteDatabase?) {
         //DEFINIR LA ESTRUCTURA DE LA DB Y DEFINIR LAS TABLAS QUE ESTAN RELACIUONANDO E INTERACTUANDO
-        val createTable = "CREATE TABLE ${Constants.ENTITY_APP} (" +
-                "${Constants.PROPERTY_ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "${Constants.PROPERTY_NAME} STRING(60), ${Constants.PORPERTY_PASSWORD} CHAR," +
-                "${Constants.PROPERTY_IS_FINISHED} BOOLEAN)" //creamos la db con OBJ Note
-        db?.execSQL(createTable) //le decimo que se ejecute
-
-        val table2 = "CREATE TABLE ${Constants.ENTITY_PRODUCT}," +
+        val createTable = "CREATE TABLE ${Constants.ENTITY_PRODUCT}(" +
                 "${Constants.PROPERTY_IDPROD} INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "${Constants.PROPERTY_PRODUCT} STRING(60), ${Constants.PROPERTY_PRICE} INTEGER)"
+        //creamos la db con OBJ Note
+        db?.execSQL(createTable) //le decimo que se ejecute
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -30,13 +26,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.DAT
         val prods: MutableList<Product> = mutableListOf()
 
         val database = this.readableDatabase
-        val query = "SELECT * FROM ${Constants.ENTITY_APP}"
+        val query = "SELECT * FROM ${Constants.ENTITY_PRODUCT}"
 
         val result = database.rawQuery(query, null)
 
         if (result.moveToFirst()) {
             do {
-                val idProd = result.getColumnIndex(Constants.PROPERTY_ID)
+                val idProd = result.getColumnIndex(Constants.PROPERTY_IDPROD)
                 val product = result.getColumnIndex(Constants.PROPERTY_PRODUCT)
                 val isFinished = result.getColumnIndex(Constants.PROPERTY_IS_FINISHED)
                 val prod = Product()

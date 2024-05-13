@@ -14,4 +14,6 @@
     <string name="dialog_title">¿Desa eliminar la nota?</string>
     <string name="dialog_ok">Eliminar</string>
     <string name="dialog_cancel">Cancelar</string>
+    <string name="notes_pending">Pendientes</string>
+    <string name="notes_finished">Finalizadas</string>
 </resources>

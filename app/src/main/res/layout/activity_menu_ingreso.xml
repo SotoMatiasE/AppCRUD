@@ -47,8 +47,30 @@
                 android:src="@drawable/ic_add_circle"
                 app:tint="?attr/colorPrimary" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notes_pending"
+            android:paddingHorizontal="@dimen/common_padding_default"
+            android:textAppearance="?attr/textAppearanceOverline"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_product"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notes_finished"
+            android:paddingHorizontal="@dimen/common_padding_default"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceOverline"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotesFinished"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/item_product"/>
