@@ -16,4 +16,6 @@ object Constants {
 
     const val TRUE = 1
     const val ID_ERROR = -1
+
+    const val REQUEST_IMAGE_CAPTURE = 1
 }

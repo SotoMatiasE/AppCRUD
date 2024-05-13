@@ -16,4 +16,7 @@
     <string name="dialog_cancel">Cancelar</string>
     <string name="notes_pending">Pendientes</string>
     <string name="notes_finished">Finalizadas</string>
+
+    <string name="key_cam">k_cam</string>
+    <string name="key_img">k_img</string>
 </resources>
