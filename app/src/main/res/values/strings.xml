@@ -7,4 +7,11 @@
     <string name="hint_obligatorio">Obligatorio</string>
     <string name="hint_description">Añade un Producto</string>
     <string name="test_button">Funciona</string>
+    <string name="msg_operation_sucess">Operacion exitosa.</string>
+    <string name="msg_operation_error">Error al modificar la DB</string>
+    <string name="validation_field_require">Campo requerido</string>
+    <string name="message_db_error">¿Desa eliminar la nota?</string>
+    <string name="dialog_title">¿Desa eliminar la nota?</string>
+    <string name="dialog_ok">Eliminar</string>
+    <string name="dialog_cancel">Cancelar</string>
 </resources>

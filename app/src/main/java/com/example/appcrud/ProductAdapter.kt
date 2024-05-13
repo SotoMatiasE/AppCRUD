@@ -9,28 +9,11 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appcrud.databinding.ItemProductBinding
 
-abstract class AppAdapter (private var prodList: MutableList<Product>, private val listener: OnClickListeners) :
-    RecyclerView.Adapter<AppAdapter.ViewHolder>()
+class ProductAdapter(private var prodList: MutableList<Product>, private val listener: MenuIngreso) :
+    RecyclerView.Adapter<ProductAdapter.ViewHolder>()
 {
     private lateinit var context: Context //extreaemos contexto para poder acceder a los recursos
 
-
-
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
-        val binding = ItemProductBinding.bind(view)//llamamos a item_product.xml
-
-        fun setListener(prod: Product){ //implementar Class Product, recibe Note respecto a la que este seleccionada
-            binding.cbFinished.setOnClickListener{
-                prod.isFinished = (it as CheckBox).isChecked //actualizamos nota dependiendo si esta o no check
-                listener.onChecked(prod, this@AppAdapter)//y lo pasamos al listener cambiamos el estado del check en pendientes
-            }
-
-            binding.root.setOnLongClickListener {
-                listener.onLongClick(prod, this@AppAdapter)
-                true
-            }
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
@@ -38,6 +21,22 @@ abstract class AppAdapter (private var prodList: MutableList<Product>, private v
         val view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false)
 
         return ViewHolder(view)
+    }
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+        val binding = ItemProductBinding.bind(view)//llamamos a item_product.xml
+
+        fun setListener(prod: Product){ //implementar Class Product, recibe Note respecto a la que este seleccionada
+            binding.cbFinished.setOnClickListener{
+                prod.isFinished = (it as CheckBox).isChecked //actualizamos nota dependiendo si esta o no check
+                //listener.onChecked(prod, this@ProductAdapter)//y lo pasamos al listener cambiamos el estado del check en pendientes
+            }
+
+            binding.root.setOnLongClickListener {
+                listener.onLongClick(prod, this@ProductAdapter)
+                true
+            }
+        }
     }
 
     //VA A INDICAR CUANTOS ELEMENTOS QUEREMOS VER EN EL LISTADO
@@ -51,7 +50,7 @@ abstract class AppAdapter (private var prodList: MutableList<Product>, private v
         holder.setListener(prod)
 
         //accede a la vista activity_main id tvDecription
-        holder.binding.tvDescription.text = prod.product
+        holder.binding.tvDescription.text = prod.productName
 
         //si tiene el valor cel check en true se auto selecciona
         holder.binding.cbFinished.isChecked = prod.isFinished

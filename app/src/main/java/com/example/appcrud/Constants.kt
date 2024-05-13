@@ -14,4 +14,7 @@ object Constants {
     const val PROPERTY_PRODUCT = "product"
     const val PROPERTY_PRICE = "price"
     const val PROPERTY_IS_FINISHED = "is_finished"
+
+    const val TRUE = 1
+    const val ID_ERROR = -1
 }
