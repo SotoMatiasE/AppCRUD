@@ -1,10 +1,12 @@
 package com.example.appcrud
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.appcrud.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(){
@@ -21,5 +23,4 @@ class MainActivity : AppCompatActivity(){
             startActivity(intent)
         }
     }
-
 }

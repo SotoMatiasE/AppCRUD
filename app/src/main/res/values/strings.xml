@@ -19,4 +19,9 @@
 
     <string name="key_cam">k_cam</string>
     <string name="key_img">k_img</string>
+
+    <string name="permission_required">Camera access is required to display the camera preview.</string>
+    <string name="ok">OK</string>
+    <string name="permission_granted">Permission is granted. You can use the camera now.</string>
+
 </resources>

@@ -53,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
+                android:layout_marginStart="@dimen/common_padding_default"
                 android:src="@drawable/ic_camera_alt"
                 app:tint="?attr/colorPrimary" />
         </LinearLayout>

@@ -3,10 +3,12 @@ package com.example.appcrud
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,12 @@ class MenuIngreso : AppCompatActivity() {
     private lateinit var prodFinishAdapter: ProductAdapter
     private lateinit var database: DatabaseHelper
     private lateinit var imageUri: Uri
+
+    private val editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            imageUri = Uri.parse(it.data?.getStringExtra(getString(R.string.key_cam)))
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,7 +34,6 @@ class MenuIngreso : AppCompatActivity() {
         setContentView(binding.root)
 
         database = DatabaseHelper(this)//INSTANCIAMOS LA CLASE DataBaseHelper
-
 
         prodAdapter = ProductAdapter(mutableListOf(), this)
         binding.rvProducts.apply {
@@ -60,8 +67,26 @@ class MenuIngreso : AppCompatActivity() {
         }
 
         binding.btnPhoto.setOnClickListener {
-            R.id.btnPhoto
+            val intent = Intent(this, MenuCamera::class.java)
+            startActivity(intent)
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_camera -> {
+                val intent = Intent(this, MenuCamera::class.java)
+                intent.putExtra(getString(R.string.key_cam), imageUri.toString())
+
+                editResult.launch(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 
@@ -122,7 +147,6 @@ class MenuIngreso : AppCompatActivity() {
         Snackbar.make(binding.root, getString(msgRes), Snackbar.LENGTH_SHORT).show()
 
     }
-
 
 
 }
