@@ -14,10 +14,6 @@ object Constants {
     const val PROPERTY_PRODUCT = "product"
     const val PROPERTY_IS_FINISHED = "is_finished"
 
-    const val ENTITY_IMG = "entity_img"
-    const val PROPERTY_IDIMG = "idImg"
-    const val PROPERTY_IMG = "image"
-
     const val TRUE = 1
     const val ID_ERROR = -1
 

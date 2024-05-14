@@ -13,13 +13,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         val createTable = "CREATE TABLE ${Constants.ENTITY_PRODUCT}(" +
                 "${Constants.PROPERTY_IDPROD} INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "${Constants.PROPERTY_PRODUCT} VARCHAR(60), ${Constants.PROPERTY_IS_FINISHED} BOOLEAN)"
-
-        val createImageTable = "CREATE TABLE ${Constants.ENTITY_IMG}(" +
-                "${Constants.PROPERTY_IDIMG} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "${Constants.PROPERTY_IMG} BLOB)"
         //creamos la db con OBJ Note
         db?.execSQL(createTable) //le decimo que se ejecute
-        db?.execSQL(createImageTable)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -64,20 +60,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         val resultId = database.insert(Constants.ENTITY_PRODUCT, null, contentValues)
 
         return resultId
-/*
-        val database2 = this.writableDatabase
-        val contentValues2 = ContentValues().apply {
-            put(Constants.PROPERTY_IMG, image.imageUri)
-        }
-        return database2.insert(Constants.ENTITY_IMG, null, contentValues2)*/
-    }
-
-    fun insertImage(img: com.example.appcrud.Image): Long {
-        val database = this.writableDatabase
-        val contentValues = ContentValues().apply {
-            put(Constants.PROPERTY_IMG, img.image)
-        }
-        return database.insert(Constants.ENTITY_IMG, null, contentValues)
     }
 
     fun updateProd (prod: Product): Boolean{
