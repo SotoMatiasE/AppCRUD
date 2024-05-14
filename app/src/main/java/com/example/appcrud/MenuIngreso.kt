@@ -1,16 +1,21 @@
 package com.example.appcrud
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.appcrud.databinding.ActivityMenuIngresoBinding
 import com.google.android.material.snackbar.Snackbar
@@ -68,7 +73,20 @@ class MenuIngreso : AppCompatActivity() {
 
         binding.btnPhoto.setOnClickListener {
             val intent = Intent(this, MenuCamera::class.java)
+
             startActivity(intent)
+            
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.CAMERA),
+                    100
+                )
+            }
         }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -146,6 +164,37 @@ class MenuIngreso : AppCompatActivity() {
     private fun showMessage(msgRes: Int) {
         Snackbar.make(binding.root, getString(msgRes), Snackbar.LENGTH_SHORT).show()
 
+    }
+
+
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.i("Permission: ", "Granted")
+            } else {
+                Log.i("Permission: ", "Denied")
+            }
+        }
+
+
+    fun View.showSnackbar(
+        view: View,
+        msg: String,
+        length: Int,
+        actionMessage: CharSequence?,
+        action: (View) -> Unit
+    ) {
+        val snackbar = Snackbar.make(view, msg, length)
+        if (actionMessage != null) {
+            snackbar.setAction(actionMessage) {
+                action(this)
+            }.show()
+        } else {
+            snackbar.show()
+        }
     }
 
 
