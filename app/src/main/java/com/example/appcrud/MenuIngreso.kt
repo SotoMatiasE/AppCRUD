@@ -46,6 +46,14 @@ class MenuIngreso : AppCompatActivity() {
 
         database = DatabaseHelper(this)//INSTANCIAMOS LA CLASE DataBaseHelper
 
+        if (checkPermission()) {
+            // Si se tienen los permisos, generar el PDF
+            generarPdf()
+        } else {
+            // Si no se tienen los permisos, solicitarlos
+            requestStoragePermission()
+        }
+
 
         prodAdapter = ProductAdapter(mutableListOf(), this)
         binding.rvProducts.apply {
@@ -97,17 +105,7 @@ class MenuIngreso : AppCompatActivity() {
             }
         }
 
-        //PERMISOS PDF
-        if (checkPermission()){
-            Toast.makeText(this, getString(R.string.permissions_acepted), Toast.LENGTH_SHORT).show()
-        } else {
-            requestPermissions()
-        }
-
         binding.btnPdf.setOnClickListener {
-            //val intent = Intent(this, PdfViews::class.java)
-
-
             generarPdf()
         }
     }
@@ -115,25 +113,30 @@ class MenuIngreso : AppCompatActivity() {
     private fun generarPdf() {
         val pdfDocument = PdfDocument()
 
-        val title = TextPaint()
-        val description = TextPaint()
         val pageInfo = PdfDocument.PageInfo.Builder(1000, 1000, 1).create()
         val page1 = pdfDocument.startPage(pageInfo)
-        val titleText = getString(R.string.title_prod)
         val canvas = page1.canvas
 
-        title.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        title.textSize = 20f
-        canvas.drawText(titleText, 10f, 150f, title)
+        val title = TextPaint().apply {
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textSize = 20f
+        }
+        val description = TextPaint().apply {
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            textSize = 14f
+        }
 
-        description.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        description.textSize = 14f
+        val products = prodAdapter.getAllProducts() // Obtener todos los productos del RecyclerView
 
-        val arrDescription = description
+        var yPosition = 150f // Posición inicial de escritura
+
+        // Iterar sobre los productos y agregar la información al PDF
+        products.forEach { product ->
+            canvas.drawText(product.productName, 10f, yPosition, title)
+            yPosition += 20f // Ajustar la posición para la próxima línea de texto
+        }
 
         pdfDocument.finishPage(page1)
-
-        //CREACION DEL DOCUMENTO PDF
 
         val file = File(Environment.getExternalStorageDirectory(), getString(R.string.name_file_pdf))
 
@@ -142,12 +145,14 @@ class MenuIngreso : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.pdf_created), Toast.LENGTH_SHORT).show()
             val intent = Intent(applicationContext, PdfViews::class.java)
             startActivity(intent)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
         pdfDocument.close()
     }
+
+
 
     private val editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -322,9 +327,6 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-
-
-
     fun View.showSnackbar(
         view: View,
         msg: String,
@@ -343,39 +345,68 @@ class MenuIngreso : AppCompatActivity() {
     }
 
     //PERMISOS PARA PDF
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE), 200)
-    }
 
+    // Manejar el resultado de la solicitud de permisos en onRequestPermissionsResult
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 200) {
-            if (grantResults.isNotEmpty()){
-                val writeStorage = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val readStorage = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (writeStorage && readStorage){
-                    Toast.makeText(this, getString(R.string.permission_succes), Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(this, getString(R.string.permission_deneid), Toast.LENGTH_SHORT).show()
-                    finish()
+        when (requestCode) {
+            STORAGE_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Generate the PDF file
+                    generarPdf()
+                } else {
+                    // Show an error message to the user
+                    Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            CAMERA_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Si se otorgan los permisos, iniciar la actividad de la cámara
+                    val intent = Intent(this, MenuCamera::class.java)
+                    editResult.launch(intent)
+                } else {
+                    // Si se deniegan los permisos, mostrar un mensaje de error al usuario
+                    Toast.makeText(
+                        this,
+                        "Camera permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
 
+
+    // Función para solicitar permisos de almacenamiento externo
+    private fun requestStoragePermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+            STORAGE_PERMISSION_REQUEST_CODE
+        )
+    }
+
+
     private fun checkPermission(): Boolean {
-        val permission1 = ContextCompat.checkSelfPermission(applicationContext,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val permission2 = ContextCompat.checkSelfPermission(applicationContext,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permission1 = ContextCompat.checkSelfPermission(
+            applicationContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        val permission2 = ContextCompat.checkSelfPermission(
+            applicationContext,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
 
         return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
+    }
 
+    companion object {
+        private const val STORAGE_PERMISSION_REQUEST_CODE = 200
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 100
     }
 }

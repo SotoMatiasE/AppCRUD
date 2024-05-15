@@ -22,6 +22,10 @@ class ProductAdapter(private var prodList: MutableList<Product>, private val lis
 
         return ViewHolder(view)
     }
+
+    fun getAllProducts(): List<Product> {
+        return prodList.toList() // Devuelve una copia de la lista de productos
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val prod = prodList[position]
 
