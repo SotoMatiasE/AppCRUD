@@ -25,5 +25,13 @@
     <string name="permission_granted">Permission is granted. You can use the camera now.</string>
     <string name="profile_erro_no_resolve">No se encontro app compatible</string>
     <string name="save_in_db">Guardar img en DB</string>
+    <string name="show_pics">Ver Foto</string>
+    <string name="create_pdf">Crear PDF</string>
+    <string name="permissions_acepted">Permisos Aceptados</string>
+    <string name="permission_succes">Permiso concedido</string>
+    <string name="permission_deneid">Permiso denegado</string>
+    <string name="title_prod">Productos</string>
+    <string name="name_file_pdf">ArchivoPdfCRUD</string>
+    <string name="pdf_created">PDF creado correctamente</string>
 
 </resources>

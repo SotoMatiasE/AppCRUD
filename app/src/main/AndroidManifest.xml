@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -22,6 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCRUD"
         tools:targetApi="31">
+        <activity
+            android:name=".PdfViews"
+            android:exported="false" />
+        <activity
+            android:name=".GaleriaApp"
+            android:exported="false" />
         <activity
             android:name=".MenuCamera"
             android:exported="false" />

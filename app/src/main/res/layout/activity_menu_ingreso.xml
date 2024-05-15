@@ -49,6 +49,15 @@
                 app:tint="?attr/colorPrimary" />
 
             <ImageButton
+                android:id="@+id/btnPdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:layout_marginStart="@dimen/common_padding_default"
+                android:src="@drawable/ic_pdf"
+                app:tint="?attr/colorPrimary" />
+
+            <ImageButton
                 android:id="@+id/btnPhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

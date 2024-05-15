@@ -79,7 +79,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
     fun insertImage(img: Image): Long {
         val database = this.writableDatabase
         val contentValues = ContentValues().apply {
-            put(Constants.PROPERTY_IMG, img.imageCap.toByteArray()) // Convierte la cadena de la URI a un ByteArray
+            put(Constants.PROPERTY_IMG, img.imageCap) // No es necesario convertir a ByteArray aquí
         }
         return database.insert(Constants.ENTITY_IMG, null, contentValues)
     }

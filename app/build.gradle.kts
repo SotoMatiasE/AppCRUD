@@ -48,6 +48,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.fragment:fragment-ktx:1.7.0")
 
+    //Dependencia PDF
+    implementation ("com.dmitryborodin:pdfview-android:1.1.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

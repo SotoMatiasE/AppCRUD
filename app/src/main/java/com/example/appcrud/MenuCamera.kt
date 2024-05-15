@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -43,11 +45,23 @@ class MenuCamera : AppCompatActivity() {
 
         img = findViewById(R.id.ivPhoto)
 
+        binding.btnShowPic.setOnClickListener {
+            val intent = Intent(this, GaleriaApp::class.java)
+            startActivity(intent)
+        }
+
         binding.btnSaveImg.setOnClickListener {
             // Check if an image has been captured
-            if (imageUri != null) {
-                // Create a new Image object with the image URI
-                val image = Image(imageCap = imageUri.toString())
+            val imageBitmap = (binding.ivPhoto.drawable as? BitmapDrawable)?.bitmap
+            if (imageBitmap != null) {
+                // Convert Bitmap to ByteArray
+                val imageData = getBitmapAsByteArray(imageBitmap)
+
+                // Convertir el ByteArray a una cadena Base64
+                val imageBase64 = Base64.encodeToString(imageData, Base64.DEFAULT)
+
+                // Create a new Image object with the image Base64 string
+                val image = Image(imageCap = imageBase64)
 
                 // Insert the image into the database
                 val insertedId = database.insertImage(image)
@@ -67,6 +81,7 @@ class MenuCamera : AppCompatActivity() {
                 Snackbar.make(binding.root, "No image to save", Snackbar.LENGTH_SHORT).show()
             }
         }
+    }
 
         /*binding.btnCam.setOnClickListener {
             // Check if the camera permission has been granted
@@ -87,7 +102,7 @@ class MenuCamera : AppCompatActivity() {
                 startActivityForResult(intent, 100)
             }
         }*/
-    }
+
 
     fun dispatchTakePictureIntent(view: View) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
@@ -114,6 +129,13 @@ class MenuCamera : AppCompatActivity() {
 
     private fun sendData() {
         val intent = Intent()
+        intent.putExtra(getString(R.string.key_img), true)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    /*private fun sendData() {
+        val intent = Intent()
 
         //VALIDACION DE CAMPOS
         with(binding) {
@@ -123,7 +145,7 @@ class MenuCamera : AppCompatActivity() {
         }
         setResult(RESULT_OK, intent)
         finish()
-    }
+    }*/
 
     private val requestPermissionLauncher =
         registerForActivityResult(

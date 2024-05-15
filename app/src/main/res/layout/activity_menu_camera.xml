@@ -17,7 +17,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.243" />
+            app:layout_constraintVertical_bias="0.331" />
 
         <ImageButton
             android:id="@+id/btnCam"
@@ -46,4 +46,14 @@
             app:layout_constraintHorizontal_weight="@integer/description_maxLength"
             />
 
+        <Button
+            android:id="@+id/btnShowPic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="64dp"
+            android:text="@string/show_pics"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="@integer/description_maxLength" />
 </androidx.constraintlayout.widget.ConstraintLayout>
