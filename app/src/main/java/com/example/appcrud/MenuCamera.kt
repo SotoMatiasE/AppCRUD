@@ -68,7 +68,7 @@ class MenuCamera : AppCompatActivity() {
             }
         }
 
-        binding.btnCam.setOnClickListener {
+        /*binding.btnCam.setOnClickListener {
             // Check if the camera permission has been granted
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -86,7 +86,7 @@ class MenuCamera : AppCompatActivity() {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, 100)
             }
-        }
+        }*/
     }
 
     fun dispatchTakePictureIntent(view: View) {
