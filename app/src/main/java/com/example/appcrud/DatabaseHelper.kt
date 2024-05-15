@@ -16,10 +16,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         //creamos la db con OBJ Note
         db?.execSQL(createTable) //le decimo que se ejecute
 
+        val createImagesTableQuery = ("CREATE TABLE ${Constants.ENTITY_IMG} (" +
+                "${Constants.PROPERTY_IDIMG} INTEGER PRIMARY KEY, ${Constants.PROPERTY_IMG} BLOB)")
+        db?.execSQL(createImagesTableQuery)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         //METODO ES PARA ALTERAR LA DB
+        db?.execSQL("DROP TABLE IF EXISTS ${Constants.ENTITY_PRODUCT}")
+        db?.execSQL("DROP TABLE IF EXISTS ${Constants.ENTITY_IMG}")
+        onCreate(db)
     }
 
     fun getAllProducts(): MutableList<Product> {
@@ -62,6 +69,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         return resultId
     }
 
+
+    fun insertImage(img: Image): Long {
+        val database = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(Constants.PROPERTY_IMG, img.image.toByteArray()) // Convierte la cadena de la URI a un ByteArray
+        }
+        return database.insert(Constants.ENTITY_IMG, null, contentValues)
+    }
+
     fun updateProd (prod: Product): Boolean{
         val database = this.writableDatabase
         val contentValues = ContentValues().apply {
@@ -86,4 +102,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         )
         return result == 1
     }
+
+
 }

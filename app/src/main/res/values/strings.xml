@@ -23,5 +23,7 @@
     <string name="permission_required">Camera access is required to display the camera preview.</string>
     <string name="ok">OK</string>
     <string name="permission_granted">Permission is granted. You can use the camera now.</string>
+    <string name="profile_erro_no_resolve">No se encontro app compatible</string>
+    <string name="save_in_db">Guardar img en DB</string>
 
 </resources>

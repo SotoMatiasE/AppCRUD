@@ -15,8 +15,3 @@ data class Product(
 {
 
 }
-
-data class Image(val image: ByteArray){
-
-
-}
