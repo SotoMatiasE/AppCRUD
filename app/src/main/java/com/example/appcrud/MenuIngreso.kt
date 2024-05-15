@@ -25,14 +25,9 @@ class MenuIngreso : AppCompatActivity() {
     private lateinit var prodAdapter: ProductAdapter
     private lateinit var prodFinishAdapter: ProductAdapter
     private lateinit var layout: View
-    private lateinit var database: DatabaseHelper
     private lateinit var imageUri: Uri
 
-    private val editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            imageUri = Uri.parse(it.data?.getStringExtra(getString(R.string.key_cam)))
-        }
-    }
+    private lateinit var database: DatabaseHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -93,10 +88,13 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-
+    private val editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            imageUri = Uri.parse(it.data?.getStringExtra(getString(R.string.key_cam)))
+        }
+    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
         return super.onCreateOptionsMenu(menu)
     }
 

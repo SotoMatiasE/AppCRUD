@@ -26,6 +26,7 @@ class MenuCamera : AppCompatActivity() {
     private lateinit var img: ImageView
     private lateinit var database: DatabaseHelper
     private lateinit var layout: View
+    private lateinit var currentPhotoPath: String // Almacena la ruta de la foto capturada
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,37 +44,55 @@ class MenuCamera : AppCompatActivity() {
         img = findViewById(R.id.ivPhoto)
 
         binding.btnSaveImg.setOnClickListener {
+            // Check if an image has been captured
             if (imageUri != null) {
-                val image = Image(image = imageUri.toString())
+                // Create a new Image object with the image URI
+                val image = Image(imageCap = imageUri.toString())
+
+                // Insert the image into the database
                 val insertedId = database.insertImage(image)
+
+                // Check if the image was successfully inserted
                 if (insertedId != -1L) {
-                    // La imagen se guardó correctamente en la base de datos
-                    Snackbar.make(layout, "Image saved successfully", Snackbar.LENGTH_SHORT).show()
-                    // Restablecer el ImageView o limpiar la URI de la imagen
+                    // Show a success message
+                    Snackbar.make(binding.root, "Image saved successfully", Snackbar.LENGTH_SHORT).show()
+
+                    // Reset the image view or clear the image URI
                 } else {
-                    Snackbar.make(layout, "Failed to save image", Snackbar.LENGTH_SHORT).show()
+                    // Show an error message
+                    Snackbar.make(binding.root, "Failed to save image", Snackbar.LENGTH_SHORT).show()
                 }
             } else {
-                Snackbar.make(layout, "No image to save", Snackbar.LENGTH_SHORT).show()
+                // Show an error message if no image has been captured
+                Snackbar.make(binding.root, "No image to save", Snackbar.LENGTH_SHORT).show()
             }
         }
 
         binding.btnCam.setOnClickListener {
+            // Check if the camera permission has been granted
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.CAMERA
                 ) == PackageManager.PERMISSION_DENIED
             ) {
+                // Request the camera permission
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.CAMERA),
                     100
                 )
             } else {
+                // Open the camera
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                if (intent.resolveActivity(packageManager)!= null) {
-                    startActivityForResult(intent, 100)
-                }
+                startActivityForResult(intent, 100)
+            }
+        }
+    }
+
+    fun dispatchTakePictureIntent(view: View) {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE)
             }
         }
     }
@@ -122,18 +141,8 @@ class MenuCamera : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
-            val imageData = getBitmapAsByteArray(imageBitmap)
-
-            val dbHelper = DatabaseHelper(this)
-            val image = Image(image = imageData.toString())
-            val insertedId = dbHelper.insertImage(image)
-            if (insertedId != -1L) {
-                // La imagen se guardó correctamente en la base de datos
-                Snackbar.make(layout, "Image saved successfully", Snackbar.LENGTH_SHORT).show()
-                // Restablecer el ImageView o limpiar la URI de la imagen
-            } else {
-                Snackbar.make(layout, "Failed to save image", Snackbar.LENGTH_SHORT).show()
-            }
+            // Muestra la imagen capturada en el ImageView
+            binding.ivPhoto.setImageBitmap(imageBitmap)
         }
     }
 

@@ -13,20 +13,26 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
         val createTable = "CREATE TABLE ${Constants.ENTITY_PRODUCT}(" +
                 "${Constants.PROPERTY_IDPROD} INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "${Constants.PROPERTY_PRODUCT} VARCHAR(60), ${Constants.PROPERTY_IS_FINISHED} BOOLEAN)"
+        val createImagesTableQuery = ("CREATE TABLE ${Constants.ENTITY_IMG} (" +
+                "${Constants.PROPERTY_IDIMG} INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "${Constants.PROPERTY_IMG} BLOB)")
         //creamos la db con OBJ Note
         db?.execSQL(createTable) //le decimo que se ejecute
 
-        val createImagesTableQuery = ("CREATE TABLE ${Constants.ENTITY_IMG} (" +
-                "${Constants.PROPERTY_IDIMG} INTEGER PRIMARY KEY, ${Constants.PROPERTY_IMG} BLOB)")
         db?.execSQL(createImagesTableQuery)
 
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         //METODO ES PARA ALTERAR LA DB
-        db?.execSQL("DROP TABLE IF EXISTS ${Constants.ENTITY_PRODUCT}")
-        db?.execSQL("DROP TABLE IF EXISTS ${Constants.ENTITY_IMG}")
-        onCreate(db)
+        when (oldVersion) {
+            1 -> {
+                db?.execSQL("ALTER TABLE ${Constants.ENTITY_PRODUCT} ADD COLUMN ${Constants.PROPERTY_IMG} BLOB")
+                db?.execSQL("CREATE TABLE ${Constants.ENTITY_IMG} (" +
+                        "${Constants.PROPERTY_IDIMG} INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "${Constants.PROPERTY_IMG} BLOB)")
+            }
+        }
     }
 
     fun getAllProducts(): MutableList<Product> {
@@ -73,7 +79,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, Constants.ENT
     fun insertImage(img: Image): Long {
         val database = this.writableDatabase
         val contentValues = ContentValues().apply {
-            put(Constants.PROPERTY_IMG, img.image.toByteArray()) // Convierte la cadena de la URI a un ByteArray
+            put(Constants.PROPERTY_IMG, img.imageCap.toByteArray()) // Convierte la cadena de la URI a un ByteArray
         }
         return database.insert(Constants.ENTITY_IMG, null, contentValues)
     }

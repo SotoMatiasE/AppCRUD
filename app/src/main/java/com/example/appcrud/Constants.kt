@@ -1,7 +1,7 @@
 package com.example.appcrud
 
 object Constants {
-    const val DATABASE_VERSION = 1
+    const val DATABASE_VERSION = 2
 
     /*const val ENTITY_APP = "entity_appCrud"
     const val PROPERTY_ID = "id"
