@@ -46,7 +46,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("androidx.fragment:fragment-ktx:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    implementation ("com.itextpdf:itext7-core:7.2.4")
 
     //Dependencia PDF
     implementation ("com.dmitryborodin:pdfview-android:1.1.0")

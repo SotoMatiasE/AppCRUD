@@ -1,5 +1,6 @@
 package com.example.appcrud
 
+
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -48,8 +49,8 @@ class ProductAdapter(private var prodList: MutableList<Product>, private val lis
                 TypedValue.COMPLEX_UNIT_SP,
                 context.resources.getInteger(R.integer.description_default_size).toFloat())
         }
-
     }
+
 
     //VA A INDICAR CUANTOS ELEMENTOS QUEREMOS VER EN EL LISTADO
     override fun getItemCount(): Int = prodList.size
