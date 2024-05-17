@@ -2,7 +2,7 @@ package com.example.appcrud
 
 import com.google.gson.annotations.SerializedName
 
-data class PostModel (
+data class PostModelResponse (
     @SerializedName("userId")
     var userId: Int,
     @SerializedName("id")

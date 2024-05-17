@@ -32,7 +32,18 @@ class ApiView : AppCompatActivity() {
             .build()
 
         //llamado a la corrutina
+        val recyclerView = findViewById<RecyclerView>(R.id.rv_api_view)
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
         val service = retrofit.create(PostApiService::class.java)
+
+        lifecycleScope.launch {
+            val response = service.getUserPost() //guarda la respuesta
+            recyclerView.adapter = PostAdapter(response)
+        }
+
+        /*val service = retrofit.create(PostApiService::class.java)
         lifecycleScope.launch {
             val response = service.getUserPost()
             response.forEach{
@@ -43,7 +54,7 @@ class ApiView : AppCompatActivity() {
                 val textView = findViewById<TextView>(R.id.tvApi)
                textView.text = response.first().title //pone el primer valor que tira retrofit
             }
-        }
+        }*/
     }
 
 
