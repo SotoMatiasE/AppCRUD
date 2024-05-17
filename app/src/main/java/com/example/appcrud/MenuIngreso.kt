@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.appcrud.databinding.ActivityMenuIngresoBinding
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -103,32 +104,14 @@ class MenuIngreso : AppCompatActivity() {
             }
         }
 
-        binding.btnPdf.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_DENIED
-            ) {
-                // Si el permiso de escritura está denegado, solicitar permisos
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ),
-                    STORAGE_PERMISSION_REQUEST_CODE
-                )
-            } else {
-                // Si el permiso de escritura está concedido, generar PDF
-                generatePdf()
-                // Lanzar la actividad para ver el PDF
-                val intent = Intent(this, PdfViews::class.java)
-                startActivity(intent)
-            }
+        binding.btnApi.setOnClickListener {
+            val intent = Intent(this, ApiView::class.java)
+            startActivity(intent)
         }
+
     }
 
-    private fun drawProductsList(canvas: Canvas, textPaint: TextPaint, productList: List<Product>) {
+    /*private fun drawProductsList(canvas: Canvas, textPaint: TextPaint, productList: List<Product>) {
         val startY = 200f // Posición inicial en el eje Y
         var currentY = startY // Variable para realizar un seguimiento de la posición actual en el eje Y
 
@@ -144,38 +127,7 @@ class MenuIngreso : AppCompatActivity() {
             currentY += 50f // Incrementa la posición en 50 píxeles (puedes ajustar este valor según sea necesario)
         }
     }
-
-
-    private fun generatePdf() {
-        // CREACION DEL DOCUMENTO PDF
-        if (checkPermission()) {
-            Toast.makeText(this, "Permissions Granted..", Toast.LENGTH_SHORT).show()
-            val docFolder = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), getString(R.string.name_file_pdf))
-            if (!docFolder.exists()) {
-                docFolder.mkdir()
-            }
-            val pdfDocument = PdfDocument()
-            val pageInfo = PdfDocument.PageInfo.Builder(1000, 1000, 1).create()
-            val page1 = pdfDocument.startPage(pageInfo)
-            val canvas = page1.canvas
-            val paint = Paint()
-            paint.textSize = 30f
-            var text = "Archivo PDF CRUD"
-            canvas.drawText(text, 100f, 100f, paint)
-            paint.textSize = 20f
-            text = "Primer PDF"
-            canvas.drawText(text, 100f, 200f, paint)
-            pdfDocument.finishPage(page1)
-            val file = File(docFolder.absoluteFile, "Archivo.pdf")
-            pdfDocument.writeTo(FileOutputStream(file))
-            pdfDocument.close()
-            Toast.makeText(this, "PDF file created", Toast.LENGTH_SHORT).show()
-
-            obtenerListaDeProductos()
-            openPdfFile(docFolder.absoluteFile)
-            savePdfToFile(pdfDocument)
-        }
-    }
+    */
 
     private fun savePdfToFile(pdfDocument: PdfDocument): File? {
         val docFolder = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), getString(R.string.name_file_pdf))
@@ -205,20 +157,17 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        //checkPermissionsAndActions()
+    }
 
     private fun obtenerListaDeProductos(): List<Product> {
         return prodAdapter.getAllProducts() // Suponiendo que tienes una función getProducts() en tu adaptador ProductAdapter
     }
 
     // Verificar permisos antes de generar el PDF y abrir la cámara
-    private fun checkPermissionsAndActions() {
-        if (checkPermission()) {
-            Toast.makeText(this, "Permissions Granted..", Toast.LENGTH_SHORT).show()
-            generatePdf()
-        } else {
-            requestStoragePermissions()
-        }
-    }
+
 
     private val editResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -392,39 +341,6 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-    fun onClickRequestStoragePermission(view: View) {
-        when {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                layout.showSnackbar(
-                    view,
-                    getString(R.string.permission_granted),
-                    Snackbar.LENGTH_INDEFINITE,
-                    null
-                ) {}
-            }
-
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) -> {
-                layout.showSnackbar(
-                    view,
-                    getString(R.string.permission_required),
-                    Snackbar.LENGTH_INDEFINITE,
-                    getString(R.string.ok)
-                ) {
-                    requestStoragePermissions()
-                }
-            }
-
-            else -> {
-                requestStoragePermissions()
-            }
-        }
-    }
 
     fun View.showSnackbar(
         view: View,
@@ -445,51 +361,4 @@ class MenuIngreso : AppCompatActivity() {
 
     //PERMISOS PARA PDF
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                generatePdf()
-            }
-        }
-    }
-
-
-    // Verificar permisos antes de generar el PDF
-
-
-    // Función para solicitar permisos de almacenamiento externo en tiempo de ejecución
-    private fun requestStoragePermissions() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                WRITE_EXTERNAL_STORAGE,
-                READ_EXTERNAL_STORAGE,
-            ),
-            STORAGE_PERMISSION_REQUEST_CODE
-        )
-    }
-
-
-    private fun checkPermission(): Boolean {
-        val permission1 = ContextCompat.checkSelfPermission(
-            applicationContext,
-            WRITE_EXTERNAL_STORAGE,
-        )
-        val permission2 = ContextCompat.checkSelfPermission(
-            applicationContext,
-            READ_EXTERNAL_STORAGE
-        )
-
-        return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
-    }
-
-    companion object {
-        private const val STORAGE_PERMISSION_REQUEST_CODE = 101
-        private const val CAMERA_PERMISSION_REQUEST_CODE = 100
-    }
 }

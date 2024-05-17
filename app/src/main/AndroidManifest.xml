@@ -8,11 +8,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-
-
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +21,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCRUD"
         tools:targetApi="31">
+        <activity
+            android:name=".ApiView"
+            android:exported="false" />
+        <activity
+            android:name=".ApiActivity"
+            android:exported="false" />
         <activity
             android:name=".PdfViews"
             android:exported="false" />
