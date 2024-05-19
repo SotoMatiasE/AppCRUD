@@ -9,15 +9,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.Manifest
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.os.Build
 import android.os.Environment
+import android.provider.Settings
 import android.text.TextPaint
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appcrud.databinding.ActivityMenuIngresoBinding
@@ -109,6 +111,135 @@ class MenuIngreso : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val buttonCreatePdf = findViewById<Button>(R.id.btn_create_pdf)
+        buttonCreatePdf.setOnClickListener {
+            createPdfFromRecyclerView()
+        }
+
+        val btnPdf = findViewById<Button>(R.id.btn_create_pdf)
+        btnPdf.setOnClickListener {
+            createPdfFromRecyclerView()
+
+            if (checkPermissions()) {
+                navigateToMenuIngreso()
+            } else {
+                requestPermissions()
+            }
+        }
+
+    }
+
+    private fun checkPermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val writePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val readPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+            writePermission == PackageManager.PERMISSION_GRANTED && readPermission == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                intent.data = Uri.parse("package:$packageName")
+                startActivityForResult(intent, PERMISSION_REQUEST_CODE)
+            } catch (e: Exception) {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivityForResult(intent, PERMISSION_REQUEST_CODE)
+            }
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                navigateToMenuIngreso()
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun navigateToMenuIngreso() {
+        val intent = Intent(this, MenuIngreso::class.java)
+        startActivity(intent)
+    }
+
+
+    private fun createPdfFromRecyclerView() {
+        val pdfDocument = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+        val paint = Paint()
+        paint.textSize = 12f
+
+        var yPosition = 30f
+
+        val productList = obtenerListaDeProductos()
+        productList.forEach { product ->
+            canvas.drawText("${product.productName} - ${if (product.isFinished) "Finished" else "Not Finished"}", 10f, yPosition, paint)
+            yPosition += 20f
+        }
+
+        pdfDocument.finishPage(page)
+
+        val directoryPath = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
+        if (directoryPath != null) {
+            val file = File(directoryPath, "productos.pdf")
+            try {
+                pdfDocument.writeTo(FileOutputStream(file))
+                Toast.makeText(this, "PDF generado con éxito", Toast.LENGTH_SHORT).show()
+                openPdfFileAutomatically(file) // Cambio aquí
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Error al generar el PDF", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "No se pudo acceder al directorio de documentos", Toast.LENGTH_SHORT).show()
+        }
+        pdfDocument.close()
+    }
+
+    private fun openPdfFileAutomatically(pdfFile: File) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", pdfFile)
+        intent.setDataAndType(uri, "application/pdf")
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Necesario para Android 7.0 y superior
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "No hay visor de PDF instalado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun obtenerListaDeProductos(): List<Product> {
+        return prodAdapter.getAllProducts()
+    }
+
+    private fun openPdfFile(pdfFile: File) {
+        val uri = Uri.fromFile(pdfFile)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "application/pdf")
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "No hay visor de PDF instalado", Toast.LENGTH_SHORT).show()
+        }
     }
 
     /*private fun drawProductsList(canvas: Canvas, textPaint: TextPaint, productList: List<Product>) {
@@ -145,25 +276,9 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-    private fun openPdfFile(pdfFile: File) {
-        val uri = Uri.fromFile(pdfFile)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "application/pdf")
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "No PDF viewer installed", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         //checkPermissionsAndActions()
-    }
-
-    private fun obtenerListaDeProductos(): List<Product> {
-        return prodAdapter.getAllProducts() // Suponiendo que tienes una función getProducts() en tu adaptador ProductAdapter
     }
 
     // Verificar permisos antes de generar el PDF y abrir la cámara
@@ -200,6 +315,15 @@ class MenuIngreso : AppCompatActivity() {
         if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             if (data?.getBooleanExtra(getString(R.string.key_img), false) == true) {
                 getData()
+            }
+        }
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    navigateToMenuIngreso()
+                } else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -359,6 +483,6 @@ class MenuIngreso : AppCompatActivity() {
         }
     }
 
-    //PERMISOS PARA PDF
-
+    companion object
+    const val PERMISSION_REQUEST_CODE = 100
 }
